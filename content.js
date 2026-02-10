@@ -1,4 +1,4 @@
-console.log("ChatGPT Prompt Navigator loaded");
+// console.log("ChatGPT Prompt Navigator loaded");
 
 function extractPrompts() {
   const prompts = [];
@@ -239,15 +239,111 @@ expandAllBtn.onclick = (e) => {
 }
 
   document.body.appendChild(panel);
+
+  setTimeout(() => {
+    document.addEventListener("click", handleOutsideClick);
+  }, 0);
 });
 }
 
+function handleOutsideClick(e) {
+  const panel = document.getElementById("prompt-navigator");
+  const button = document.getElementById("prompt-toggle-btn");
+
+  if (!panel) {
+    document.removeEventListener("click", handleOutsideClick);
+    return;
+  }
+
+  if (
+    panel.contains(e.target) ||
+    button?.contains(e.target)
+  ) {
+    return; // click inside → ignore
+  }
+
+  panel.remove();
+  document.removeEventListener("click", handleOutsideClick);
+}
 
 
+function waitForHeader() {
+  return new Promise(resolve => {
+    if (document.querySelector("header")) return resolve();
 
-// Temporary: print prompts to console
-setTimeout(() => {
-    const prompts = extractPrompts();
-    createPromptButton();
-  console.log("Extracted prompts:", prompts);
-}, 10000); // Delay to allow page content to load
+    const obs = new MutationObserver(() => {
+      if (document.querySelector("header")) {
+        obs.disconnect();
+        resolve();
+      }
+    });
+
+    obs.observe(document.documentElement, {
+      childList: true,
+      subtree: true
+    });
+  });
+}
+
+
+function waitForFirstUserMessage() {
+  return new Promise(resolve => {
+    if (
+      document.querySelector(
+        'div[data-message-author-role="user"]'
+      )
+    ) return resolve();
+
+    const obs = new MutationObserver(() => {
+      if (
+        document.querySelector(
+          'div[data-message-author-role="user"]'
+        )
+      ) {
+        obs.disconnect();
+        resolve();
+      }
+    });
+
+    obs.observe(document.body, {
+      childList: true,
+      subtree: true
+    });
+  });
+}
+
+let lastUrl = location.href;
+
+function watchChatNavigation() {
+  const obs = new MutationObserver(() => {
+    if (location.href !== lastUrl) {
+      lastUrl = location.href;
+      promptNavInitialized = false;
+      initPromptNavigator();
+    }
+  });
+
+  obs.observe(document.body, {
+    childList: true,
+    subtree: true
+  });
+}
+
+
+async function initPromptNavigator() {
+//   console.log("⏳ waiting for header...");
+  await waitForHeader();
+
+//   console.log("⏳ waiting for messages...");
+  await waitForFirstUserMessage();
+
+//   console.log("✅ header + messages ready");
+  createPromptButton();
+}
+
+async function init() {
+    await initPromptNavigator();
+    watchChatNavigation();
+}
+
+addEventListener("load", init);
