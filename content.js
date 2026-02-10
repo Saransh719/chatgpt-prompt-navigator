@@ -47,6 +47,8 @@ function createPromptButton() {
   `;
 
   btn.onclick = () => togglePromptPanel(btn);
+  btn.onmouseenter = () => btn.style.background = "#333";
+  btn.onmouseleave = () => btn.style.background = "transparent";
 
   shareButton.parentElement.insertBefore(btn, shareButton);
 }
