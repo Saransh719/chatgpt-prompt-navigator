@@ -314,13 +314,14 @@ function waitForFirstUserMessage() {
   });
 }
 
-let lastUrl = location.href;
+if (!window.lastUrl) {
+  window.lastUrl = location.href;
+}
 
 function watchChatNavigation() {
   const obs = new MutationObserver(() => {
-    if (location.href !== lastUrl) {
-      lastUrl = location.href;
-      promptNavInitialized = false;
+    if (location.href !== window.lastUrl) {
+      window.lastUrl = location.href;
       initPromptNavigator();
     }
   });
@@ -333,19 +334,29 @@ function watchChatNavigation() {
 
 
 async function initPromptNavigator() {
-//   console.log("⏳ waiting for header...");
+  // console.log("⏳ waiting for header...");
   await waitForHeader();
 
-//   console.log("⏳ waiting for messages...");
+  // console.log("⏳ waiting for messages...");
   await waitForFirstUserMessage();
 
-//   console.log("✅ header + messages ready");
+  // console.log("✅ header + messages ready");
   createPromptButton();
 }
 
 async function init() {
-    await initPromptNavigator();
-    watchChatNavigation();
+    let success = false;
+    while (!success) {
+        try {
+            await initPromptNavigator(); // try to initialize
+            watchChatNavigation(); // start watching for navigation changes
+            success = true;             // if no error, mark success
+        } catch (error) {
+            console.error("Init failed, retrying...", error);
+            // Optional: wait a bit before retrying
+            await new Promise(resolve => setTimeout(resolve, 1000));
+        }
+    }
 }
 
-addEventListener("load", init);
+init();

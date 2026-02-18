@@ -3,12 +3,17 @@
   "name": "ChatGPT Prompt Navigator",
   "version": "1.0",
   "description": "Extracts and navigates your prompts in ChatGPT conversations",
-  "permissions": ["activeTab"],
+  "permissions": ["activeTab" , "scripting"],
+  "background": {
+    "service_worker": "background.js"
+  },
   "host_permissions": ["https://chatgpt.com/c/*"],
+  "action": {},
   "content_scripts": [
     {
       "matches": ["https://chatgpt.com/c/*"],
-      "js": ["content.js"]
+      "js": ["content.js"],
+      "run_at": "document_end"
     }
   ]
 }
