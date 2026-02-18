@@ -27,7 +27,7 @@ chrome.tabs.query({url : "https://chatgpt.com/*"}, (tabs) => {
 // Listen for tab updates (page load or reload)
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
   // Only run when the page has fully loaded
-  if (changeInfo.status === "complete" && tab.url && tab.url.startsWith("https://chatgpt.com/")) {
+  if (changeInfo.status === "complete" && tab.url ) {
     chrome.scripting.executeScript({
       target: { tabId: tabId },
       files: ["content.js"]
