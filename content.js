@@ -30,7 +30,8 @@ function createPromptButton() {
   if (document.getElementById("prompt-toggle-btn")) return;
 
   const shareButton = document.querySelector('[aria-label="Share"]'); 
-  if (!shareButton) return;
+  const loginButton = document.querySelector('[data-testid="login-button"]'); //for incognito mode where share button is not present
+  if (!shareButton && !loginButton) return;
 
 
   //creating the button element
@@ -50,7 +51,11 @@ function createPromptButton() {
   btn.onmouseenter = () => btn.style.background = "#333";
   btn.onmouseleave = () => btn.style.background = "transparent";
 
+
+  if (shareButton)
   shareButton.parentElement.insertBefore(btn, shareButton);
+  else if (loginButton)
+  loginButton.parentElement.insertBefore(btn, loginButton);
 }
 
 function togglePromptPanel(button) {

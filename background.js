@@ -6,13 +6,6 @@ chrome.action.onClicked.addListener((tab) => {
   });
 });
 
-// chrome.tabs.query({active: true, currentWindow: true}, tabs => {
-//   chrome.scripting.executeScript({
-//     target: {tabId: tabs[0].id},
-//     files: ['content.js']
-//   });
-// });
-
 chrome.tabs.query({url : "https://chatgpt.com/*"}, (tabs) => {
   for (let tab of tabs) {
     if (tab.url && tab.url.startsWith("https://chatgpt.com/")) {
