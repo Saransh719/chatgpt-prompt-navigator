@@ -1,4 +1,6 @@
 // console.log("ChatGPT Prompt Navigator loaded");
+import {summarizePromptCatched} from "./summary.js";
+const MAX_CONCURRENT = 4;
 
 function extractPrompts() {
   const prompts = [];
@@ -70,7 +72,7 @@ function togglePromptPanel(button) {
 
 
 
-function createPromptPanel(anchorBtn) {
+async function createPromptPanel(anchorBtn) {
 if (!anchorBtn) return;
 
 const rect = anchorBtn.getBoundingClientRect();
@@ -136,10 +138,86 @@ header.appendChild(expandAllBtn);
 panel.appendChild(header);
 
 const list = document.createElement("div");
+panel.appendChild(list);
 
-const promptItems = [];
+const prompts = extractPrompts();
+const promptItems = []; //for expand all
 
-extractPrompts().forEach((prompt, idx) => {
+
+//CREATE PROMPT ITEMS
+prompts.forEach((prompt, idx) => {
+  const skeletonPrompt = {
+    ...prompt,
+    summary: "Summarizing..."
+  };
+
+  const itemData = createPromptItem(skeletonPrompt, idx );
+  itemData.item.style.opacity = "0.6";
+  list.appendChild(itemData.item);
+  promptItems.push(itemData);
+});
+
+
+expandAllBtn.onclick = (e) => {
+  e.stopPropagation();
+  allExpanded = !allExpanded;
+  promptItems.forEach(({ expandBtn, fullText }) => {
+    fullText.style.display = allExpanded ? "block" : "none";
+    expandBtn.textContent = allExpanded ? "Collapse" : "Expand";
+  });
+  expandAllBtn.textContent = allExpanded ? "Collapse All" : "Expand All";
+}
+
+
+let currentIndex = 0;
+async function worker(){
+  while (currentIndex < prompts.length) {
+    const idx = currentIndex++;
+    const prompt = prompts[idx];
+
+    try{
+      const summary = await summarizePromptCatched(prompt.text);
+      const newItemData = createPromptItem({...prompt, summary}, idx);
+
+      promptItems[idx].item.replaceWith(newItemData.item);
+      promptItems[idx] = newItemData; //update reference for expand all
+    }
+    catch(err) {
+      const newItemData = createPromptItem({...prompt, summary: null}, idx);  //failed so use slice
+      promptItems[idx].item.replaceWith(newItemData.item);
+      promptItems[idx] = newItemData; 
+    }
+  }
+}
+
+//start workers
+for (let i=0; i<MAX_CONCURRENT; i++) {
+  worker();
+}
+
+// prompts.forEach(async(prompt, idx) => {
+//   try{
+//     const summary = await summarizePromptCatched(prompt.text);
+//     const newItemData = createPromptItem({...prompt, summary}, idx);
+
+//     promptItems[idx].item.replaceWith(newItemData.item);
+//     promptItems[idx] = newItemData; //update reference for expand all
+//   }
+//   catch(err) {
+//     const newItemData = createPromptItem({...prompt, summary: null}, idx);  //failed so use slice
+//     promptItems[idx].item.replaceWith(newItemData.item);
+//     promptItems[idx] = newItemData; //update reference for expand all
+//   }
+// });
+
+document.body.appendChild(panel);
+
+setTimeout(() => {
+  document.addEventListener("click", handleOutsideClick);
+}, 0);
+}
+
+function createPromptItem(prompt, idx) {
   const item = document.createElement("div");
   item.style.cssText = `
     padding: 6px 12px;
@@ -176,7 +254,7 @@ extractPrompts().forEach((prompt, idx) => {
   `;
 
   const summary = document.createElement("span");
-  summary.textContent = prompt.text.slice(0, 50) || "(empty)";
+  summary.textContent = prompt.summary || prompt.text.slice(0, 50);
   summary.style.flexGrow = "1";
   summary.style.overflow = "hidden";
   summary.style.textOverflow = "ellipsis";
@@ -224,33 +302,8 @@ extractPrompts().forEach((prompt, idx) => {
   item.onmouseenter = () => item.style.background = "#222";
   item.onmouseleave = () => item.style.background = "transparent";
 
-  list.appendChild(item);
-  promptItems.push({ item, expandBtn, fullText });  //for expand all functionality
+  return { item, expandBtn, fullText };
 
-  panel.appendChild(list);
-  let allExpanded = false;
-
-expandAllBtn.onclick = (e) => {
-    e.stopPropagation();
-    allExpanded = !allExpanded;
-    promptItems.forEach(({ expandBtn, fullText }) => {
-        if (allExpanded) {
-            fullText.style.display = "block";
-            expandBtn.textContent = "Collapse";
-        } else {
-            fullText.style.display = "none";
-            expandBtn.textContent = "Expand";
-        }
-        expandAllBtn.textContent = allExpanded ? "Collapse All" : "Expand All";
-    });
-}
-
-  document.body.appendChild(panel);
-
-  setTimeout(() => {
-    document.addEventListener("click", handleOutsideClick);
-  }, 0);
-});
 }
 
 function handleOutsideClick(e) {

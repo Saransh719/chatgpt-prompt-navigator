@@ -1,0 +1,28 @@
+{
+  "dependencies": {
+    "@google/genai": "^1.43.0"
+  },
+  "devDependencies": {
+    "esbuild": "^0.27.3"
+  },
+  "name": "chatgpt-prompt-navigator",
+  "version": "1.0.0",
+  "description": "ChatGPT Prompt Navigator is a lightweight Chrome extension that adds a prompt navigation panel to ChatGPT. It allows you to quickly view and jump to any of your previous prompts in the current conversation.",
+  "main": "build.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "watch": "esbuild src/content.js --bundle --outfile=dist/content.bundle.js --format=esm --watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Saransh719/chatgpt-prompt-navigator.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/Saransh719/chatgpt-prompt-navigator/issues"
+  },
+  "homepage": "https://github.com/Saransh719/chatgpt-prompt-navigator#readme"
+}

@@ -2,7 +2,7 @@ chrome.action.onClicked.addListener((tab) => {
     console.log("Button clicked, sending message to content script...");
   chrome.scripting.executeScript({
     target: { tabId: tab.id },
-    files: ["content.js"]
+    files: ["dist/content.bundle.js"]
   });
 });
 
@@ -11,7 +11,7 @@ chrome.tabs.query({url : "https://chatgpt.com/*"}, (tabs) => {
     if (tab.url && tab.url.startsWith("https://chatgpt.com/")) {
       chrome.scripting.executeScript({
         target: { tabId: tab.id },
-        files: ["content.js"]
+        files: ["dist/content.bundle.js"]
       });
     }
   }
@@ -23,7 +23,7 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
   if (changeInfo.status === "complete" && tab.url ) {
     chrome.scripting.executeScript({
       target: { tabId: tabId },
-      files: ["content.js"]
+      files: ["dist/content.bundle.js"]
     }).catch(err => console.error("Script injection failed:", err));
   }
 });

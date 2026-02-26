@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "ChatGPT Prompt Navigator",
-  "version": "1.0",
+  "version": "2.0",
   "description": "Extracts and navigates your prompts in ChatGPT conversations",
   "permissions": ["activeTab" , "scripting"],
   "background": {
@@ -12,7 +12,8 @@
   "content_scripts": [
     {
       "matches": ["https://chatgpt.com/c/*"],
-      "js": ["content.js"],
+      "js": ["dist/content.bundle.js"],
+      "type" : "module",
       "run_at": "document_end"
     }
   ]
