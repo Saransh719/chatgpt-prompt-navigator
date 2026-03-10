@@ -4,7 +4,6 @@ ChatGPT Prompt Navigator is a lightweight Chrome extension that adds a prompt na
 
 The extension works entirely inside your browser and enhances navigation without modifying ChatGPT's functionality.
 
----
 
 # Features
 
@@ -14,7 +13,9 @@ The extension works entirely inside your browser and enhances navigation without
 * Automatically works when switching between chats
 * Closes when clicking outside the panel
 
----
+# Images
+<img width="1920" height="926" alt="Screenshot_20260303_204916" src="https://github.com/user-attachments/assets/6298232c-fa76-4276-b20f-9913ba429d4c" />
+
 
 # Privacy
 
@@ -28,7 +29,6 @@ This extension is completely client-side.
 
 All processing happens locally in your browser.
 
----
 
 # Demo Behaviour
 
@@ -41,7 +41,6 @@ All processing happens locally in your browser.
 
 Note- If the button does not appear, try clicking on the icon in extensions toolbar
 
----
 
 # Installation
 
