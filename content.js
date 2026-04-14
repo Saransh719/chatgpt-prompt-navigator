@@ -31,7 +31,8 @@ function createPromptButton() {
 
   const shareButton = document.querySelector('[aria-label="Share"]'); 
   const loginButton = document.querySelector('[data-testid="login-button"]'); //for incognito mode where share button is not present
-  if (!shareButton && !loginButton) return;
+  const header = document.querySelector("header"); //for when someone shares a chat and no button is present
+  // if (!shareButton && !loginButton) return;
 
 
   //creating the button element
@@ -56,6 +57,8 @@ function createPromptButton() {
   shareButton.parentElement.insertBefore(btn, shareButton);
   else if (loginButton)
   loginButton.parentElement.insertBefore(btn, loginButton);
+  else if (header)
+  header.appendChild(btn);
 }
 
 function togglePromptPanel(button) {
